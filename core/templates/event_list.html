@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Events List | Sessional Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .navbar {
+      background: rgba(255,255,255,0.98);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .container-box {
+      background: rgba(255,255,255,0.97);
+      border-radius: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      padding: 40px 35px;
+      margin: 30px auto;
+      max-width: 1100px;
+    }
+    .table {
+      background: #fff;
+      border-radius: 12px;
+    }
+    .table thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+    h2 {
+      color: #667eea;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+        <i class="bi bi-house-door"></i> Sessional System
+      </a>
+      <div class="d-flex align-items-center">
+        <span class="me-3">Hi, <strong>{{ user.username }}</strong></span>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-sm me-2">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a href="{% url 'logout' %}" class="btn btn-danger btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-box">
+    <h2><i class="bi bi-calendar-event"></i> All Events</h2>
+    
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Search Form -->
+    <form method="get" class="mb-4">
+      <div class="row g-2">
+        <div class="col-md-8">
+          {{ search_form.query }}
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </div>
+        <div class="col-md-2">
+          {% if user.role == 'faculty' or user.role == 'admin' %}
+            <a href="{% url 'event_create' %}" class="btn btn-success w-100">
+              <i class="bi bi-plus-lg"></i> New Event
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+
+    <!-- Events Table -->
+    <div style="overflow-x: auto;">
+      <table class="table table-hover table-bordered">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Venue</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in events %}
+            <tr>
+              <td>{{ event.title }}</td>
+              <td>{{ event.date }}</td>
+              <td><span class="badge bg-info">{{ event.event_type }}</span></td>
+              <td>{{ event.venue }}</td>
+              <td>
+                <a href="{% url 'event_detail' event.pk %}" class="btn btn-sm btn-secondary">
+                  <i class="bi bi-eye"></i> View
+                </a>
+                {% if user.role == 'admin' or event.created_by == user %}
+                  <a href="{% url 'event_edit' event.pk %}" class="btn btn-sm btn-info">
+                    <i class="bi bi-pencil"></i> Edit
+                  </a>
+                  <a href="{% url 'event_delete' event.pk %}" class="btn btn-sm btn-danger"
+                     onclick="return confirm('Delete this event?')">
+                    <i class="bi bi-trash"></i> Delete
+                  </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">No events found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

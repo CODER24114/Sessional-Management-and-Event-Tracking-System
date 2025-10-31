@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Notification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    body {background: linear-gradient(135deg,#96fbc4 0%,#f9f586 100%); min-height: 100vh;}
+    .navbar{background:rgba(255,255,255,0.98); box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+    .glass-card {background:rgba(255,255,255,0.93); border-radius:24px; box-shadow:0 10px 33px 0 rgba(76,76,150,.10); padding:30px 30px;max-width:600px;margin:40px auto;}
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+        <i class="bi bi-house-door"></i> Sessional System
+      </a>
+      <div class="d-flex align-items-center">
+        <span class="me-3">Hi, <strong>{{ user.username }}</strong></span>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-sm me-2">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a href="{% url 'logout' %}" class="btn btn-danger btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="glass-card">
+    <h2><i class="bi bi-bell"></i> Create Notification</h2>
+    
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+    
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        {{ form.title }}
+        {% if form.title.errors %}<div class="text-danger">{{ form.title.errors.0 }}</div>{% endif %}
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Message</label>
+        {{ form.message }}
+        {% if form.message.errors %}<div class="text-danger">{{ form.message.errors.0 }}</div>{% endif %}
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Send To</label>
+        {{ form.target_role }}
+        {% if form.target_role.errors %}<div class="text-danger">{{ form.target_role.errors.0 }}</div>{% endif %}
+      </div>
+      
+      <div class="mb-3 form-check">
+        {{ form.is_active }}
+        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+          Active (visible to users)
+        </label>
+      </div>
+      
+      <button type="submit" class="btn btn-success w-100">Create Notification</button>
+      <a href="{% url 'notifications' %}" class="btn btn-secondary w-100 mt-2">Cancel</a>
+    </form>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
